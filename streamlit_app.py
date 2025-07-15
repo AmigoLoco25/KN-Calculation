@@ -1238,7 +1238,11 @@ for _, row in valid_rows.iterrows():
 # ---------- RESULT TABLE ----------
 final_df = pd.DataFrame(results)
 
-# Format prices as €
+final_df.rename(columns={
+    "KN Invoice Price": "KN Invoice Price (€)",
+    "Calculated Price": "Calculated Price (€)"
+}, inplace=True)
+
 final_df["KN Invoice Price (€)"] = final_df["KN Invoice Price (€)"].map(lambda x: f"€{x:,.2f}" if pd.notnull(x) else "N/A")
 final_df["Calculated Price (€)"] = final_df["Calculated Price (€)"].map(lambda x: f"€{x:,.2f}" if pd.notnull(x) else "N/A")
 
