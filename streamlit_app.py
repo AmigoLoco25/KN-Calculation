@@ -1103,7 +1103,7 @@ for _, row in valid_rows.iterrows():
         "Destination": f"""{city}, {country}, {zipcode}""",
         "Zone" : zone,
         "KN Invoice Price (€)": row["Spend in EUR"],
-        "Calculated Price (€)": price if price else None
+        "Calculated Price (€)": price if price else "Rates not available"
     })
 
 # ---------- FINAL RESULT TABLE ----------
@@ -1116,7 +1116,9 @@ def format_currency(x):
         return "N/A"
 
 final_df["KN Invoice Price (€)"] = final_df["KN Invoice Price (€)"].apply(format_currency)
-final_df["Calculated Price (€)"] = final_df["Calculated Price (€)"].apply(format_currency)
+final_df["Calculated Price (€)"] = final_df["Calculated Price (€)"].apply(
+    lambda x: format_currency(x) if isinstance(x, (int, float)) else x
+)
 
 final_df["Volume (m3)"] = final_df["Volume (m3)"].map(lambda x: f"{x:.3f}")
 final_df["Gross weight (kgs)"] = final_df["Gross weight (kgs)"].map(lambda x: f"{x:.3f}")
