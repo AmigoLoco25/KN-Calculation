@@ -76,12 +76,6 @@ for _, row in valid_rows.iterrows():
         num_packages = 0
 
 # ---------- DISPLAY DESTINATION INFO ----------
-st.markdown(f"""
-**Destination:** {city}, {country} ({zipcode})  
-**Weight:** {weight:.2f} kg  
-**Packages:** {num_packages}
-""")
-
 # ---------- PRICE MATRIX & ZONE DEFINITIONS ----------
 # (You already wrote the `get_zone_*` and `get_price()` functions — paste them all here!)
 # For example:
@@ -1066,10 +1060,27 @@ for _, row in valid_rows.iterrows():
     country_code = row['Consignee Country / UN Code']
     city = row['Destination']
     num_packages = row['Packages']
-    
+    albaran = row["ABO"]
     weight_class = get_weight_tier(weight)
     zone = None
     price = get_distributor_price(country_code,num_packages)
+
+     results.append({
+        "ABO": row["ABO"],
+        "Volume (m3)": row["Volume (m3)"],
+        "Gross weight (kgs)": weight,
+        "Packages": num_packages,
+        "KN Invoice Price (€)": row["Spend in EUR"],
+        "Calculated Price (€)": price if price else None
+    })
+
+    
+    st.markdown(f"""
+    **{albaran}**:
+    **Destination:** {city}, {country} ({zipcode})  
+    **Weight:** {weight:.2f} kg  
+    **Packages:** {num_packages}
+    """)
 
     #France
     if country_code == "FR":
@@ -1223,11 +1234,6 @@ for _, row in valid_rows.iterrows():
 
 # ---------- RESULT TABLE ----------
     results.append({
-        "ABO": row["ABO"],
-        "Volume (m3)": row["Volume (m3)"],
-        "Gross weight (kgs)": weight,
-        "Packages": num_packages,
-        "KN Invoice Price (€)": row["Spend in EUR"],
         "Calculated Price (€)": price if price else None
     })
     
