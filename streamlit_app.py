@@ -1137,6 +1137,6 @@ csv = final_df.to_csv(index=False).encode("utf-8-sig")
 st.download_button(
     label="📥 Download CSV",
     data=csv,
-    file_name=f"albaran_{albaran_df.loc[row_idx, 'docNumber']}.csv",
+    file_name="kn_albaran_cost_comparison.csv",
     mime="text/csv",
 )
