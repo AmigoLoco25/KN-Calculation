@@ -3,6 +3,12 @@ import pandas as pd
 import requests
 import math
 
+
+# --- AUTH ---
+password = st.text_input("🔐Ingrese la contraseña", type="password")
+if password != st.secrets["app_password"]:
+    st.stop()
+
 # ---------- CONFIGURATION ----------
 st.set_page_config(page_title="Shipping Cost Calculator", layout="wide")
 st.title("📦 Shipping Cost Comparator")
