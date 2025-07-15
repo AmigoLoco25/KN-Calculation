@@ -1108,17 +1108,20 @@ for _, row in valid_rows.iterrows():
 # ---------- FINAL RESULT TABLE ----------
 final_df = pd.DataFrame(results)
 
-# Format prices
-final_df["KN Invoice Price (€)"] = final_df["KN Invoice Price (€)"].map(lambda x: f"€{x:,.2f}" if pd.notnull(x) else "N/A")
-final_df["Calculated Price (€)"] = final_df["Calculated Price (€)"].map(lambda x: f"€{x:,.2f}" if pd.notnull(x) else "N/A")
+def format_currency(x):
+    try:
+        return f"€{x:,.2f}"
+    except:
+        return "N/A"
 
-# Bold price headers
+final_df["KN Invoice Price (€)"] = final_df["KN Invoice Price (€)"].apply(format_currency)
+final_df["Calculated Price (€)"] = final_df["Calculated Price (€)"].apply(format_currency)
+
+# Highlight headers
 def highlight_headers(s):
     return ['font-weight: bold' if col in ["KN Invoice Price (€)", "Calculated Price (€)"] else '' for col in s.index]
 
-# Show compact table
+# Show result
 st.subheader("💸 Final Comparison")
 styled_df = final_df.style.apply(highlight_headers, axis=1)
-row_height = 35
-height = len(final_df) * row_height
-st.dataframe(styled_df, use_container_width=False, height=height)
+st.dataframe(styled_df, use_container_width=False, height=35 * len(final_df) + 40)
