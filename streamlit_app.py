@@ -1226,9 +1226,14 @@ final_df["Calculated Price (€)"] = final_df["Calculated Price (€)"].map(lamb
 def highlight_headers(s):
     return ['font-weight: bold' if col in ["KN Invoice Price (€)", "Calculated Price (€)"] else '' for col in s.index]
 
-st.subheader("💸 Final Comparison")
+st.subheader("Cost Comparison")
 
 # Container to control width
 with st.container():
     styled_df = final_df.style.apply(highlight_headers, axis=1)
-    st.dataframe(styled_df, use_container_width=False, height=200)
+row_count = final_df.shape[0]
+row_height = 35  # reasonable height per row
+buffer = 40      # padding for header
+dynamic_height = row_count * row_height + buffer
+
+st.dataframe(styled_df, use_container_width=False, height=dynamic_height)
