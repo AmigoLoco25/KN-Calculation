@@ -1092,7 +1092,7 @@ for _, row in valid_rows.iterrows():
             price = get_price(weight_class, zone, croatia_price_matrix, weight)
 
     # ✅ Append once (after price calculation is complete)
-     if zone is None:
+    if zone is None:
         zone = "N/A (Destributor)"
     
     results.append({
