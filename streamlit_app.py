@@ -1129,6 +1129,6 @@ def highlight_headers(s):
     return ['font-weight: bold' if col in ["KN Invoice Price (€)", "Calculated Price (€)"] else '' for col in s.index]
 
 # Show result
-st.subheader("💸 Final Comparison")
+st.subheader("Cost Comparison")
 styled_df = final_df.style.apply(highlight_headers, axis=1)
 st.dataframe(styled_df, use_container_width=False, height=35 * len(final_df) + 37)
