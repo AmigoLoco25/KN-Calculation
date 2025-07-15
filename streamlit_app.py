@@ -33,7 +33,7 @@ def load_data(file_path):
     return df
 
 # ---------- FILE INPUT ----------
-file_path = st.text_input("Enter path to CSV", value="SPEND REPORT CON ABO.csv")
+file_path = "SPEND REPORT CON ABO.csv"
 try:
     kn_df = load_data(file_path)
 except Exception as e:
@@ -1226,7 +1226,7 @@ final_df["Calculated Price (€)"] = final_df["Calculated Price (€)"].map(lamb
 def highlight_headers(s):
     return ['font-weight: bold' if col in ["KN Invoice Price (€)", "Calculated Price (€)"] else '' for col in s.index]
 
-st.subheader("Cost Comparison")
+st.subheader("Cost Comparison for Albaran {albaran}")
 
 # Container to control width
 with st.container():
