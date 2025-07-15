@@ -1134,9 +1134,9 @@ styled_df = final_df.style.apply(highlight_headers, axis=1)
 st.dataframe(styled_df, use_container_width=False, height=35 * len(final_df) + 37)
 
 csv = styled_df.to_csv(index=False).encode("utf-8-sig")
-    st.download_button(
-        label="📥 Download CSV",
-        data=csv,
-        file_name=f"albaran_{albaran_df.loc[row_idx, 'docNumber']}.csv",
-        mime="text/csv",
+st.download_button(
+    label="📥 Download CSV",
+    data=csv,
+    file_name=f"albaran_{albaran_df.loc[row_idx, 'docNumber']}.csv",
+    mime="text/csv",
     )
