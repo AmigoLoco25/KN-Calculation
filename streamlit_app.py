@@ -61,7 +61,7 @@ missing_abos = [ab for ab in albaran_list if ab not in valid_abos]
 
 # Show warning if any not found
 if missing_abos:
-    st.warning(f"Albarán(s) not found: {', '.join(missing_abos)}")
+    st.warning(f"Albarán(s) not found for KN: {', '.join(missing_abos)}")
 
 # Filter only valid ones
 valid_rows = kn_df[kn_df["ABO"].isin(albaran_list)]
