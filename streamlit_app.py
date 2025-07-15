@@ -1214,9 +1214,21 @@ final_df = pd.DataFrame([{
     "Volume (m3)": row["Volume (m3)"],
     "Gross weight (kgs)": weight,
     "Packages": num_packages,
-    "KN Invoice Price": row["Spend in EUR"],
-    "Calculated Price": price if price else "N/A"
+    "KN Invoice Price (€)": row["Spend in EUR"],
+    "Calculated Price (€)": price if price else None
 }])
 
+# Format Euro columns
+final_df["KN Invoice Price (€)"] = final_df["KN Invoice Price (€)"].map(lambda x: f"€{x:,.2f}" if pd.notnull(x) else "N/A")
+final_df["Calculated Price (€)"] = final_df["Calculated Price (€)"].map(lambda x: f"€{x:,.2f}" if pd.notnull(x) else "N/A")
+
+# Custom styling with smaller font and bold headers
+def highlight_headers(s):
+    return ['font-weight: bold' if col in ["KN Invoice Price (€)", "Calculated Price (€)"] else '' for col in s.index]
+
 st.subheader("💸 Final Comparison")
-st.dataframe(final_df)
+
+# Container to control width
+with st.container():
+    styled_df = final_df.style.apply(highlight_headers, axis=1)
+    st.dataframe(styled_df, use_container_width=False, height=200)
