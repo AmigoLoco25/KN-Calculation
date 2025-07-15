@@ -1007,7 +1007,24 @@ def distributor_price_germany(num_pallets):
         return None
 
 
-# In[591]:
+
+def get_distributor_price(country, pallets):
+    price = None
+
+    if country == "GB":
+        price = distributor_price_uk(pallets)
+    elif country == "IE":
+        price = distributor_price_ireland(pallets)
+    elif country == "NO":
+        price = distributor_price_norway(pallets)
+    elif country == "PT":
+        price = distributor_price_portugal(pallets)
+    elif country == "DE":
+        price = distributor_price_germany(pallets)
+
+    return price if price is not None else None
+
+
 
 results = []
 
