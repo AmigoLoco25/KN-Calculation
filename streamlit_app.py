@@ -1116,6 +1116,12 @@ def format_currency(x):
 final_df["KN Invoice Price (€)"] = final_df["KN Invoice Price (€)"].apply(format_currency)
 final_df["Calculated Price (€)"] = final_df["Calculated Price (€)"].apply(format_currency)
 
+final_df["Volume (m3)"] = final_df["Volume (m3)"].map(lambda x: f"{x:.3f}")
+final_df["Gross weight (kgs)"] = final_df["Gross weight (kgs)"].map(lambda x: f"{x:.3f}")
+final_df["Packages"] = final_df["Packages"].map(lambda x: f"{int(x)}")
+
+# Bold final columns
+
 # Highlight headers
 def highlight_headers(s):
     return ['font-weight: bold' if col in ["KN Invoice Price (€)", "Calculated Price (€)"] else '' for col in s.index]
