@@ -1009,48 +1009,6 @@ def distributor_price_germany(num_pallets):
 
 # In[591]:
 
-
-def get_distributor_price(country, pallets):
-    price = None
-
-    if country == "GB":
-        price = distributor_price_uk(pallets)
-    elif country == "IE":
-        price = distributor_price_ireland(pallets)
-    elif country == "NO":
-        price = distributor_price_norway(pallets)
-    elif country == "PT":
-        price = distributor_price_portugal(pallets)
-    elif country == "DE":
-        price = distributor_price_germany(pallets)
-
-    return price if price is not None else None
-
-
-def get_price(weight_class, zone, matrix, weight):
-    try:
-        zone_index = zone - 1  # Zones start at 1; list indices at 0
-        
-        if weight_class not in ["up to 2000 kg", "up to 3000 kg"]:
-            return matrix[weight_class][zone_index]
-        
-        if weight_class == "up to 2000 kg":
-            remainder = weight - 1000
-            print(f"{matrix["up to 1000 kg"][zone_index]} + ({math.ceil(remainder / 100)} * {matrix[weight_class][zone_index]})")
-            return matrix["up to 1000 kg"][zone_index] + (math.ceil(remainder / 100) * matrix[weight_class][zone_index])
-        
-        if weight_class == "up to 3000 kg":
-            remainder = weight - 2000
-            print(f"{matrix["up to 1000 kg"][zone_index]} + ({math.ceil(remainder / 100)} * {matrix[weight_class][zone_index]})")
-            return matrix["up to 1000 kg"][zone_index] + (math.ceil(remainder / 100) * matrix[weight_class][zone_index])
-    
-    except Exception as e:
-        print("Error in get_price:", e)
-        return None
-
-
-# ---------- CHOOSE COUNTRY / CALCULATE PRICE ----------
-
 results = []
 
 for _, row in valid_rows.iterrows():
@@ -1061,12 +1019,59 @@ for _, row in valid_rows.iterrows():
     city = row['Destination']
     num_packages = row['Packages']
     albaran = row["ABO"]
+
     weight_class = get_weight_tier(weight)
     zone = None
-    price = get_distributor_price(country_code,num_packages)
+    price = get_distributor_price(country_code, num_packages)
 
+    # Secondary price logic (if distributor price not found)
+    if price is None:
+        if country_code == "FR":
+            zone = get_zone_france(zipcode)
+            price = get_price(weight_class, zone, france_price_matrix, weight)
+        elif country_code == "BE":
+            zone = get_zone_belgium(zipcode)
+            price = get_price(weight_class, zone, belgium_price_matrix, weight)
+        elif country_code == "CZ":
+            zone = get_zone_czech(zipcode)
+            price = get_price(weight_class, zone, czech_price_matrix, weight)
+        elif country_code == "DK":
+            zone = get_zone_denmark(zipcode)
+            price = get_price(weight_class, zone, denmark_price_matrix, weight)
+        elif country_code == "FI":
+            zone = get_zone_finland(zipcode)
+            price = get_price(weight_class, zone, finland_price_matrix, weight)
+        elif country_code == "DE":
+            zone = get_zone_germany(zipcode)
+            price = get_price(weight_class, zone, germany_price_matrix, weight)
+        elif country_code == "GB":
+            zone = get_zone_uk(zipcode)
+            price = get_price(weight_class, zone, uk_price_matrix, weight)
+        elif country_code == "PL":
+            zone = get_zone_poland(zipcode)
+            price = get_price(weight_class, zone, poland_price_matrix, weight)
+        elif country_code == "IE":
+            zone = get_zone_ireland(zipcode)
+            price = get_price(weight_class, zone, ireland_price_matrix, weight)
+        elif country_code == "NL":
+            zone = get_zone_netherlands(zipcode)
+            price = get_price(weight_class, zone, netherlands_price_matrix, weight)
+        elif country_code == "AT":
+            zone = get_zone_austria(zipcode)
+            price = get_price(weight_class, zone, austria_price_matrix, weight)
+        elif country_code == "CH":
+            zone = get_zone_switzerland(zipcode)
+            price = get_price(weight_class, zone, switzerland_price_matrix, weight)
+        elif country_code == "EE":
+            zone = get_zone_estonia(zipcode)
+            price = get_price(weight_class, zone, estonia_price_matrix, weight)
+        elif country_code == "HR":
+            zone = get_zone_croatia(zipcode)
+            price = get_price(weight_class, zone, croatia_price_matrix, weight)
+
+    # ✅ Append once (after price calculation is complete)
     results.append({
-        "ABO": row["ABO"],
+        "ABO": albaran,
         "Volume (m3)": row["Volume (m3)"],
         "Gross weight (kgs)": weight,
         "Packages": num_packages,
@@ -1074,179 +1079,26 @@ for _, row in valid_rows.iterrows():
         "Calculated Price (€)": price if price else None
     })
 
-    
+    # Optional: print each result
     st.markdown(f"""
-    **{albaran}**:
+    **{albaran}**  
     **Destination:** {city}, {country} ({zipcode})  
     **Weight:** {weight:.2f} kg  
-    **Packages:** {num_packages}
+    **Packages:** {num_packages}  
     """)
 
-    #France
-    if country_code == "FR":
-        if price is None:
-            weight_tier = get_weight_tier(weight)
-            zone = get_zone_france(zipcode)
-            price = get_price(weight_tier,zone,france_price_matrix,weight)
-    
-    
-    # In[595]:
-    
-    
-    #Belgium
-    if country_code == "BE":
-        if price is None:
-            weight_tier = get_weight_tier(weight)
-            zone = get_zone_belgium(zipcode)
-            price = get_price(weight_tier,zone,belgium_price_matrix,weight)
-    
-    
-    # In[596]:
-    
-    
-    #Czech Republic
-    if country_code == "CZ":
-        if price is None:
-            weight_tier = get_weight_tier(weight)
-            zone = get_zone_czech(zipcode)
-            price = get_price(weight_tier,zone,czech_price_matrix,weight)
-    
-    
-    # In[597]:
-    
-    
-    #Denmark
-    if country_code == "DK":
-        if price is None:
-            weight_tier = get_weight_tier(weight)
-            zone = get_zone_denmark(zipcode)
-            price = get_price(weight_tier,zone,denmark_price_matrix,weight)
-    
-    
-    # In[598]:
-    
-    
-    #Finland
-    if country_code == "FI":
-        if price is None:
-            weight_tier = get_weight_tier(weight)
-            zone = get_zone_finland(zipcode)
-            price = get_price(weight_tier,zone,finland_price_matrix,weight)
-    
-    
-    # In[599]:
-    
-    
-    #Germany
-    if country_code == "DE":
-        if price is None:
-            weight_tier = get_weight_tier(weight)
-            zone = get_zone_germany(zipcode)
-            price = get_price(weight_tier,zone,germany_price_matrix,weight)
-    
-    
-    # In[600]:
-    
-    
-    #England
-    if country_code == "GB":
-        if price is None:
-            weight_tier = get_weight_tier(weight)
-            zone = get_zone_uk(zipcode)
-            price = get_price(weight_tier,zone,uk_price_matrix,weight)
-    
-    
-    # In[601]:
-    
-    
-    #Poland
-    if country_code == "PL":
-        if price is None:
-            weight_tier = get_weight_tier(weight)
-            zone = get_zone_poland(zipcode)
-            price = get_price(weight_tier,zone,poland_price_matrix,weight)
-    
-    
-    # In[602]:
-    
-    
-    #Ireland
-    if country_code == "IE":
-        if price is None:
-            weight_tier = get_weight_tier(weight)
-            zone = get_zone_ireland(zipcode)
-            price = get_price(weight_tier,zone,ireland_price_matrix,weight)
-    
-    
-    # In[603]:
-    
-    
-    #Netherlands
-    if country_code == "NL":
-        weight_tier = get_weight_tier(weight)
-        zone = get_zone_netherlands(zipcode)
-        price = get_price(weight_tier,zone,netherlands_price_matrix,weight)
-    
-    
-    # In[604]:
-    
-    
-    #Austria
-    if country_code == "AT":
-        if price is None:
-            weight_tier = get_weight_tier(weight)
-            zone = get_zone_austria(zipcode)
-            price = get_price(weight_tier,zone,austria_price_matrix,weight)
-    
-    
-    # In[605]:
-    
-    
-    #Switzerland
-    if country_code == "CH":
-        if price is None:
-            weight_tier = get_weight_tier(weight)
-            zone = get_zone_switzerland(zipcode)
-            price = get_price(weight_tier,zone,switzerland_price_matrix,weight)
-    
-    
-    # In[606]:
-    
-    
-    #Estonia
-    if country_code == "EE":
-        if price is None:
-            weight_tier = get_weight_tier(weight)
-            zone = get_zone_estonia(zipcode)
-            price = get_price(weight_tier,zone,estonia_price_matrix,weight)
-    
-    
-    # In[607]:
-    
-    
-    #Croatia
-    if country_code == "HR":
-        if price is None:
-            weight_tier = get_weight_tier(weight)
-            zone = get_zone_croatia(zipcode)
-            price = get_price(weight_tier,zone,croatia_price_matrix,weight)
-    
-
-# ---------- RESULT TABLE ----------
-    results.append({
-        "Calculated Price (€)": price if price else None
-    })
-    
+# ---------- FINAL RESULT TABLE ----------
 final_df = pd.DataFrame(results)
 
+# Format prices
 final_df["KN Invoice Price (€)"] = final_df["KN Invoice Price (€)"].map(lambda x: f"€{x:,.2f}" if pd.notnull(x) else "N/A")
 final_df["Calculated Price (€)"] = final_df["Calculated Price (€)"].map(lambda x: f"€{x:,.2f}" if pd.notnull(x) else "N/A")
 
-# Highlight the last two headers
+# Bold price headers
 def highlight_headers(s):
     return ['font-weight: bold' if col in ["KN Invoice Price (€)", "Calculated Price (€)"] else '' for col in s.index]
 
-# Show table
+# Show compact table
 st.subheader("💸 Final Comparison")
 styled_df = final_df.style.apply(highlight_headers, axis=1)
 row_height = 35
