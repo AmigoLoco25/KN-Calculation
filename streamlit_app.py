@@ -1124,4 +1124,4 @@ def highlight_headers(s):
 # Show result
 st.subheader("💸 Final Comparison")
 styled_df = final_df.style.apply(highlight_headers, axis=1)
-st.dataframe(styled_df, use_container_width=False, height=35 * len(final_df))
+st.dataframe(styled_df, use_container_width=False, height=35 * len(final_df) + 50)
