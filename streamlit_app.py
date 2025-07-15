@@ -1102,6 +1102,8 @@ for _, row in valid_rows.iterrows():
         "Calculated Price (€)": price if price else None
     })
 
+    if zone is None:
+        zone = "N/A (Destributor)"
     # Optional: print each result
     st.markdown(f"""
     ***{albaran}***  
