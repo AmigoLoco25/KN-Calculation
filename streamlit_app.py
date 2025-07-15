@@ -1099,8 +1099,7 @@ for _, row in valid_rows.iterrows():
     # Optional: print each result
     st.markdown(f"""
     ***{albaran}***  
-    **Destination:** {city}, {country} ({zipcode})
-    **Zone:** {zone}
+    **Destination:** {city}, {country}, {zipcode}, Zone: {zone}
     **Weight:** {weight:.2f} kg  
     **Packages:** {num_packages}  
     """)
