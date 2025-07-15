@@ -1093,24 +1093,19 @@ for _, row in valid_rows.iterrows():
             price = get_price(weight_class, zone, croatia_price_matrix, weight)
 
     # ✅ Append once (after price calculation is complete)
+     if zone is None:
+        zone = "N/A (Destributor)"
+    
     results.append({
         "ABO": albaran,
         "Volume (m3)": row["Volume (m3)"],
         "Gross weight (kgs)": weight,
         "Packages": num_packages,
+        "Destination": f"""{city}, {country}, {zipcode}""",
+        "Zone" : zone,
         "KN Invoice Price (€)": row["Spend in EUR"],
         "Calculated Price (€)": price if price else None
     })
-
-    if zone is None:
-        zone = "N/A (Destributor)"
-    # Optional: print each result
-    st.markdown(f"""
-    ***{albaran}***  
-    **Destination:** {city}, {country}, {zipcode},  *Zone {zone}*                         
-    **Weight:** {weight:.2f} kg  
-    **Packages:** {num_packages}  
-    """)
 
 # ---------- FINAL RESULT TABLE ----------
 final_df = pd.DataFrame(results)
