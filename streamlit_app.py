@@ -47,7 +47,7 @@ except Exception as e:
     st.stop()
 
 # ---------- ALBARAN SELECTION ----------
-raw_input = st.text_input("Enter Albaranes (comma-separated)", placeholder="e.g., A250254, A250255", key="albaran_input")
+raw_input = st.text_input("Enter Albaranes de Kuehne & Nagel(comma-separated)", placeholder="e.g., A250254, A250255", key="albaran_input")
 st.markdown('<div class="centered-input"></div>', unsafe_allow_html=True)
 
 # Stop if empty
