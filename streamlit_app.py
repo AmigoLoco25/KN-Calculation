@@ -1236,14 +1236,14 @@ for _, row in valid_rows.iterrows():
 
 
 # ---------- RESULT TABLE ----------
-results.append({
-    "ABO": row["ABO"],
-    "Volume (m3)": row["Volume (m3)"],
-    "Gross weight (kgs)": weight,
-    "Packages": num_packages,
-    "KN Invoice Price (€)": row["Spend in EUR"],
-    "Calculated Price (€)": price if price else None
-})
+    results.append({
+        "ABO": row["ABO"],
+        "Volume (m3)": row["Volume (m3)"],
+        "Gross weight (kgs)": weight,
+        "Packages": num_packages,
+        "KN Invoice Price (€)": row["Spend in EUR"],
+        "Calculated Price (€)": price if price else None
+    })
 final_df = pd.DataFrame(results)
 
 final_df["KN Invoice Price (€)"] = final_df["KN Invoice Price (€)"].map(lambda x: f"€{x:,.2f}" if pd.notnull(x) else "N/A")
