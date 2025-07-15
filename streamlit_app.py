@@ -64,12 +64,16 @@ if valid_rows.empty:
     st.stop()
 
 # ---------- INFO FROM CSV ----------
-weight = valid_rows['Gross weight (kgs)']
-zipcode = valid_rows['Consignee ZIP Code']
-country = valid_rows['Consignee Country']
-country_code = valid_rows['Consignee Country / UN Code']
-city = valid_rows['Destination']
-num_packages = int(valid_rows['Packages'])
+for _, row in valid_rows.iterrows():
+    weight = row['Gross weight (kgs)']
+    zipcode = row['Consignee ZIP Code']
+    country = row['Consignee Country']
+    country_code = row['Consignee Country / UN Code']
+    city = row['Destination']
+    try:
+        num_packages = int(row['Packages'])
+    except:
+        num_packages = 0
 
 # ---------- DISPLAY DESTINATION INFO ----------
 st.markdown(f"""
