@@ -1093,7 +1093,7 @@ for _, row in valid_rows.iterrows():
 
     # ✅ Append once (after price calculation is complete)
     if zone is None:
-        zone = "N/A (Destributor)"
+        zone = "N/A (Distributor)"
     
     results.append({
         "ABO": albaran,
