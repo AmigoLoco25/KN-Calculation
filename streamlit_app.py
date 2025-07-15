@@ -1220,20 +1220,6 @@ for _, row in valid_rows.iterrows():
             zone = get_zone_croatia(zipcode)
             price = get_price(weight_tier,zone,croatia_price_matrix,weight)
     
-    
-    
-    
-
-
-
-
-
-
-
-
-
-
-
 
 # ---------- RESULT TABLE ----------
     results.append({
@@ -1244,6 +1230,7 @@ for _, row in valid_rows.iterrows():
         "KN Invoice Price (€)": row["Spend in EUR"],
         "Calculated Price (€)": price if price else None
     })
+    
 final_df = pd.DataFrame(results)
 
 final_df["KN Invoice Price (€)"] = final_df["KN Invoice Price (€)"].map(lambda x: f"€{x:,.2f}" if pd.notnull(x) else "N/A")
