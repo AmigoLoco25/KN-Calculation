@@ -1044,8 +1044,11 @@ for _, row in valid_rows.iterrows():
 
     weight_class = get_weight_tier(weight)
     zone = None
-    price = get_distributor_price(country_code, num_packages)
 
+    ##REMOVE THIS LINE TO REMOVE DISTRIBUTOR PRICING. SET PRICE TO NONE 
+    price = get_distributor_price(country_code, num_packages)
+    #price = None
+    
     # Secondary price logic (if distributor price not found)
     if price is None:
         if country_code == "FR":
