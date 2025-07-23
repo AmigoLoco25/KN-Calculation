@@ -1,18 +1,25 @@
+# --- STREAMLIT IMPORTS ---
 import streamlit as st
 import pandas as pd
-import requests
 import math
+from datetime import datetime, timedelta
 
 # --- AUTH ---
 password = st.text_input("🔐Ingrese la contraseña", type="password")
 if password != st.secrets["app_password"]:
     st.stop()
 
-# ---------- CONFIGURATION ----------
-st.set_page_config(page_title="Shipping Cost Calculator", layout="wide")
+# --- CONFIG ---
+st.set_page_config(page_title="Shipping Cost Comparator", layout="wide")
 st.title("📦 Shipping Cost Comparator")
 
-# ---------- LOAD CSV ----------
+# --- LAST MONTH DATE RANGE ---
+today = datetime.today()
+first_day_this_month = datetime(today.year, today.month, 1)
+last_month_end = first_day_this_month - timedelta(days=1)
+last_month_start = datetime(last_month_end.year, last_month_end.month, 1)
+
+# --- LOAD DATA ---
 @st.cache_data
 def load_data(file_path):
     df = pd.read_csv(file_path, sep=';', header=1)
@@ -35,9 +42,9 @@ def load_data(file_path):
         .str.replace(",", ".", regex=False).astype(float)
     )
     df["Consignee Country"] = df["Consignee Country"].str.title()
+    df['Shipment Creation/Booking Date (Day)'] = pd.to_datetime(df['Shipment Creation/Booking Date (Day)'], errors='coerce')
     return df
 
-# ---------- FILE INPUT ----------
 file_path = "SPEND REPORT CON ABO.csv"
 try:
     kn_df = load_data(file_path)
@@ -45,45 +52,32 @@ except Exception as e:
     st.error(f"Error loading file: {e}")
     st.stop()
 
-# ---------- ALBARAN SELECTION ----------
-raw_input = st.text_input("Enter Albaranes de Kuehne & Nagel (comma-separated)", placeholder="e.g., A250254, A250255", key="albaran_input")
-st.markdown('<div class="centered-input"></div>', unsafe_allow_html=True)
+# --- FILTER LAST MONTH ---
+last_month_df = kn_df[
+    (kn_df['Shipment Creation/Booking Date (Day)'] >= last_month_start) &
+    (kn_df['Shipment Creation/Booking Date (Day)'] <= last_month_end)
+]
 
-# Stop if empty
-if not raw_input:
-    st.stop()
+# --- OPTIONAL ALBARÁN INPUT ---
+raw_input = st.text_input("🔍 Filter by Albaranes (comma-separated, optional)", placeholder="e.g., A250254, A250255")
+if raw_input:
+    albaran_list = [ab.strip().upper() for ab in raw_input.split(",") if ab.strip()]
+    valid_abos = last_month_df["ABO"].unique()
+    missing_abos = [ab for ab in albaran_list if ab not in valid_abos]
 
-# Split and clean inputs
-albaran_list = [ab.strip().upper() for ab in raw_input.split(",") if ab.strip()]
-valid_abos = kn_df["ABO"].unique()
-missing_abos = [ab for ab in albaran_list if ab not in valid_abos]
+    if missing_abos:
+        st.warning(f"Albarán(s) not found for June 2025: {', '.join(missing_abos)}")
 
-# Show warning if any not found
-if missing_abos:
-    st.warning(f"Albarán(s) not found for KN: {', '.join(missing_abos)}")
-
-# Filter only valid ones
-valid_rows = kn_df[kn_df["ABO"].isin(albaran_list)]
+    valid_rows = last_month_df[last_month_df["ABO"].isin(albaran_list)]
+else:
+    valid_rows = last_month_df
 
 if valid_rows.empty:
+    st.info("No matching shipments for last month.")
     st.stop()
 
-# ---------- INFO FROM CSV ----------
-for _, row in valid_rows.iterrows():
-    weight = row['Gross weight (kgs)']
-    zipcode = row['Consignee ZIP Code']
-    country = row['Consignee Country']
-    country_code = row['Consignee Country / UN Code']
-    city = row['Destination']
-    try:
-        num_packages = int(row['Packages'])
-    except:
-        num_packages = 0
+# --- PRICING MATRICES, ZONES & LOGIC ---
 
-# ---------- DISPLAY DESTINATION INFO ----------
-# ---------- PRICE MATRIX & ZONE DEFINITIONS ----------
-# (You already wrote the `get_zone_*` and `get_price()` functions — paste them all here!)
-# For example:
 def get_weight_tier(weight):
     if weight < 30:
         return "up to 30 kg"
@@ -1031,6 +1025,20 @@ def get_distributor_price(country, pallets):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+# --- CALCULATE SHIPPING COSTS ---
 results = []
 
 for _, row in valid_rows.iterrows():
@@ -1039,18 +1047,18 @@ for _, row in valid_rows.iterrows():
     country = row['Consignee Country']
     country_code = row['Consignee Country / UN Code']
     city = row['Destination']
-    num_packages = row['Packages']
-    albaran = row["ABO"]
+    try:
+        num_packages = int(row['Packages'])
+    except:
+        num_packages = 0
 
+    albaran = row["ABO"]
     weight_class = get_weight_tier(weight)
     zone = None
-
-    ##REMOVE THIS LINE TO REMOVE DISTRIBUTOR PRICING. SET PRICE TO NONE 
     price = get_distributor_price(country_code, num_packages)
-    #price = None
-    
-    # Secondary price logic (if distributor price not found)
+
     if price is None:
+        # Use your existing logic to get the zone and calculate the price from matrix
         if country_code == "FR":
             zone = get_zone_france(zipcode)
             price = get_price(weight_class, zone, france_price_matrix, weight)
@@ -1073,10 +1081,10 @@ for _, row in valid_rows.iterrows():
             zone = get_zone_uk(zipcode)
             price = get_price(weight_class, zone, uk_price_matrix, weight)
         elif country_code == "PL":
-            zone = get_zone_poland(zipcode)
+            zone = 1
             price = get_price(weight_class, zone, poland_price_matrix, weight)
         elif country_code == "IE":
-            zone = get_zone_ireland(zipcode)
+            zone = get_zone_ireland(city)
             price = get_price(weight_class, zone, ireland_price_matrix, weight)
         elif country_code == "NL":
             zone = get_zone_netherlands(zipcode)
@@ -1094,7 +1102,6 @@ for _, row in valid_rows.iterrows():
             zone = get_zone_croatia(zipcode)
             price = get_price(weight_class, zone, croatia_price_matrix, weight)
 
-    # ✅ Append once (after price calculation is complete)
     if zone is None:
         zone = "N/A (Distributor)"
     
@@ -1104,12 +1111,12 @@ for _, row in valid_rows.iterrows():
         "Gross weight (kgs)": weight,
         "Packages": num_packages,
         "Destination": f"""{city}, {country}, {zipcode}""",
-        "Zone" : zone,
+        "Zone": zone,
         "KN Invoice Price (€)": row["Spend in EUR"],
         "Calculated Price (€)": price if price else "Rates not available"
     })
 
-# ---------- FINAL RESULT TABLE ----------
+# --- OUTPUT DATAFRAME ---
 final_df = pd.DataFrame(results)
 
 def format_currency(x):
@@ -1122,26 +1129,18 @@ final_df["KN Invoice Price (€)"] = final_df["KN Invoice Price (€)"].apply(fo
 final_df["Calculated Price (€)"] = final_df["Calculated Price (€)"].apply(
     lambda x: format_currency(x) if isinstance(x, (int, float)) else x
 )
-
 final_df["Volume (m3)"] = final_df["Volume (m3)"].map(lambda x: f"{x:.3f}")
 final_df["Gross weight (kgs)"] = final_df["Gross weight (kgs)"].map(lambda x: f"{x:.3f}")
 final_df["Packages"] = final_df["Packages"].map(lambda x: f"{int(x)}")
 
-# Bold final columns
-
-# Highlight headers
-def highlight_headers(s):
-    return ['font-weight: bold' if col in ["KN Invoice Price (€)", "Calculated Price (€)"] else '' for col in s.index]
-
-# Show result
-st.subheader("Cost Comparison")
-styled_df = final_df.style.apply(highlight_headers, axis=1)
-st.dataframe(styled_df, use_container_width=False, height=35 * len(final_df) + 37)
+# --- DISPLAY ---
+st.subheader("Cost Comparison for June 2025")
+st.dataframe(final_df.style.highlight_max(axis=0), use_container_width=True)
 
 csv = final_df.to_csv(index=False).encode("utf-8-sig")
 st.download_button(
     label="📥 Download CSV",
     data=csv,
-    file_name="kn_albaran_cost_comparison.csv",
+    file_name="kn_albaran_cost_comparison_June2025.csv",
     mime="text/csv",
 )
