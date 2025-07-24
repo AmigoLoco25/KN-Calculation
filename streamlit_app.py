@@ -76,7 +76,7 @@ else:
     # Default: filter to last 30 days of data
     last_month = datetime.today() - timedelta(days=60)
     valid_rows = kn_df[kn_df["Shipment Creation/Booking Date (Day)"] >= last_month]
-    kn_df['Shipment Creation/Booking Date (Day)'] = kn_df['Shipment Creation/Booking Date (Day)'].dt.strftime('%d/%m/%Y')
+    valid_rows['Shipment Creation/Booking Date (Day)'] = valid_rows['Shipment Creation/Booking Date (Day)'].dt.strftime('%d/%m/%Y')
 
 
 if valid_rows.empty:
