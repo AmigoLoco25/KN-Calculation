@@ -1087,7 +1087,7 @@ for _, row in valid_rows.iterrows():
             zone = get_zone_uk(zipcode)
             price = get_price(weight_class, zone, uk_price_matrix, weight)
         elif country_code == "PL":
-            zone = 1
+            zone = 0
             price = get_price(weight_class, zone, poland_price_matrix, weight)
         elif country_code == "IE":
             zone = get_zone_ireland(zipcode)
