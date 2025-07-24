@@ -54,7 +54,6 @@ except Exception as e:
 kn_df['Shipment Creation/Booking Date (Day)'] = pd.to_datetime(
     kn_df['Shipment Creation/Booking Date (Day)'], errors='coerce', dayfirst=True
 )
-kn_df['Shipment Creation/Booking Date (Day)'] = kn_df['Shipment Creation/Booking Date (Day)'].dt.strftime('%d/%m/%Y')
 
 # Input search box for ABOs
 raw_input = st.text_input(
@@ -81,6 +80,8 @@ else:
 if valid_rows.empty:
     st.info("No orders found for this period or ABO selection.")
     st.stop()
+
+kn_df['Shipment Creation/Booking Date (Day)'] = kn_df['Shipment Creation/Booking Date (Day)'].dt.strftime('%d/%m/%Y')
 
 # ---------- INFO FROM CSV ----------
 for _, row in valid_rows.iterrows():
