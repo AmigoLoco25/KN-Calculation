@@ -138,16 +138,32 @@ def get_weight_tier(weight):
 
 def get_price(weight_class, zone, matrix, weight):
     try:
-        zone_index = zone - 1
-        if weight_class not in ["up to 2000 kg", "up to 3000 kg"]:
-            return matrix[weight_class][zone_index]
-        if weight_class == "up to 2000 kg":
-            remainder = weight - 1000
-            return matrix["up to 1000 kg"][zone_index] + (math.ceil(remainder / 100) * matrix[weight_class][zone_index])
-        if weight_class == "up to 3000 kg":
-            remainder = weight - 2000
-            return matrix["up to 1000 kg"][zone_index] + (math.ceil(remainder / 100) * matrix[weight_class][zone_index])
-    except Exception as e:
+        value = matrix[weight_class]
+
+        # 🟡 Zone-based pricing (list of values)
+        if isinstance(value, list):
+            zone_index = zone - 1
+            if weight_class not in ["up to 2000 kg", "up to 3000 kg"]:
+                return value[zone_index]
+            if weight_class == "up to 2000 kg":
+                remainder = weight - 1000
+                return matrix["up to 1000 kg"][zone_index] + (math.ceil(remainder / 100) * value[zone_index])
+            if weight_class == "up to 3000 kg":
+                remainder = weight - 2000
+                return matrix["up to 1000 kg"][zone_index] + (math.ceil(remainder / 100) * value[zone_index])
+
+        # 🟢 Flat-rate pricing (single values like Poland)
+        else:
+            if weight_class not in ["up to 2000 kg", "up to 3000 kg"]:
+                return value
+            if weight_class == "up to 2000 kg":
+                remainder = weight - 1000
+                return matrix["up to 1000 kg"] + (math.ceil(remainder / 100) * matrix["up to 2000 kg"])
+            if weight_class == "up to 3000 kg":
+                remainder = weight - 2000
+                return matrix["up to 1000 kg"] + (math.ceil(remainder / 100) * matrix["up to 3000 kg"])
+
+    except Exception:
         return None
 
 # ---------- MATRIXES ----------# For now, here's an example stub:
@@ -1094,7 +1110,8 @@ for _, row in valid_rows.iterrows():
             zone = get_zone_uk(zipcode)
             price = get_price(weight_class, zone, uk_price_matrix, weight)
         elif country_code == "PL":
-            price = poland_price_matrix.get(weight_class, None)
+            zone = 1  # placeholder
+            price = get_price(weight_class, zone, poland_price_matrix, weight)            
             zone = "Flat Rate"
         elif country_code == "IE":
             zone = get_zone_ireland(zipcode)
