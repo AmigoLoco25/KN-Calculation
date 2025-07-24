@@ -74,8 +74,12 @@ if raw_input.strip():
     valid_rows = kn_df[kn_df["ABO"].isin(albaran_list)]
 else:
     # Default: filter to last 30 days of data
-    last_month = datetime.today() - timedelta(days=60)
-    valid_rows = kn_df[kn_df["Shipment Creation/Booking Date (Day)"] >= last_month]
+    latest_date = kn_df['Shipment Creation/Booking Date (Day)'].max()
+    start_date = latest_date - timedelta(days=30)
+
+    valid_rows = kn_df[
+        kn_df['Shipment Creation/Booking Date (Day)'].between(start_date, latest_date)
+    ]
 
 
 if valid_rows.empty:
