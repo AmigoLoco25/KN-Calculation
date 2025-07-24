@@ -1084,7 +1084,7 @@ for _, row in valid_rows.iterrows():
     weight_class = get_weight_tier(weight)
     zone = None
 
-    use_distributor_pricing = st.checkbox("Use Current Distributor Pricing", value=True)
+    use_distributor_pricing = st.checkbox("Use Current Distributor Pricing", value=True, key="distributor_toggle")
     if use_distributor_pricing:
         price = get_distributor_price(country_code, num_packages)
     else:
