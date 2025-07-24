@@ -76,13 +76,13 @@ else:
     # Default: filter to last 30 days of data
     last_month = datetime.today() - timedelta(days=60)
     valid_rows = kn_df[kn_df["Shipment Creation/Booking Date (Day)"] >= last_month]
-    valid_rows['Shipment Creation/Booking Date (Day)'] = valid_rows['Shipment Creation/Booking Date (Day)'].dt.strftime('%d/%m/%Y')
 
 
 if valid_rows.empty:
     st.info("No orders found for this period or ABO selection.")
     st.stop()
 
+valid_rows['Shipment Creation/Booking Date (Day)'] = valid_rows['Shipment Creation/Booking Date (Day)'].dt.strftime('%d/%m/%Y')
 
 # ---------- INFO FROM CSV ----------
 for _, row in valid_rows.iterrows():
