@@ -52,7 +52,7 @@ except Exception as e:
 # ---------- ALBARAN SELECTION ----------
 # Convert to datetime
 kn_df['Shipment Creation/Booking Date (Day)'] = pd.to_datetime(
-    kn_df['Shipment Creation/Booking Date (Day)'], errors='coerce'
+    kn_df['Shipment Creation/Booking Date (Day)'], errors='coerce', dayfirst=True
 )
 
 # Input search box for ABOs
