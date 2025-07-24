@@ -57,26 +57,35 @@ except Exception as e:
 
 
 # ---------- ALBARAN SELECTION ----------
-raw_input = st.text_input("Enter Albaranes de Kuehne & Nagel (comma-separated)", placeholder="e.g., A250254, A250255", key="albaran_input")
-st.markdown('<div class="centered-input"></div>', unsafe_allow_html=True)
+# Convert to datetime
+kn_df['Shipment Creation/Booking Date (Day)'] = pd.to_datetime(
+    kn_df['Shipment Creation/Booking Date (Day)'], errors='coerce'
+)
 
-# Stop if empty
-if not raw_input:
-    st.stop()
+# Input search box for ABOs
+raw_input = st.text_input(
+    "🔍 Enter specific ABOs (optional, comma-separated):",
+    placeholder="e.g., A250254, A250255",
+    key="albaran_input"
+)
 
-# Split and clean inputs
-albaran_list = [ab.strip().upper() for ab in raw_input.split(",") if ab.strip()]
-valid_abos = kn_df["ABO"].unique()
-missing_abos = [ab for ab in albaran_list if ab not in valid_abos]
+# Determine whether user entered specific ABOs
+if raw_input.strip():
+    albaran_list = [ab.strip().upper() for ab in raw_input.split(",") if ab.strip()]
+    valid_abos = kn_df["ABO"].unique()
+    missing_abos = [ab for ab in albaran_list if ab not in valid_abos]
 
-# Show warning if any not found
-if missing_abos:
-    st.warning(f"Albarán(s) not found for KN: {', '.join(missing_abos)}")
+    if missing_abos:
+        st.warning(f"Albarán(s) not found: {', '.join(missing_abos)}")
 
-# Filter only valid ones
-valid_rows = kn_df[kn_df["ABO"].isin(albaran_list)]
+    valid_rows = kn_df[kn_df["ABO"].isin(albaran_list)]
+else:
+    # Default: filter to last 30 days of data
+    last_month = datetime.today() - timedelta(days=30)
+    valid_rows = kn_df[kn_df["Shipment Creation/Booking Date (Day)"] >= last_month]
 
 if valid_rows.empty:
+    st.info("No orders found for this period or ABO selection.")
     st.stop()
 
 # ---------- INFO FROM CSV ----------
