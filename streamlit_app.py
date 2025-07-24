@@ -54,6 +54,7 @@ except Exception as e:
 kn_df['Shipment Creation/Booking Date (Day)'] = pd.to_datetime(
     kn_df['Shipment Creation/Booking Date (Day)'], errors='coerce', dayfirst=True
 )
+kn_df['Shipment Creation/Booking Date (Day)'] = kn_df['Shipment Creation/Booking Date (Day)'].dt.strftime('%d/%m/%Y')
 
 # Input search box for ABOs
 raw_input = st.text_input(
