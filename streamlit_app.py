@@ -1084,8 +1084,14 @@ for _, row in valid_rows.iterrows():
     weight_class = get_weight_tier(weight)
     zone = None
 
+    use_distributor_pricing = st.checkbox("Use Current Distributor Pricing", value=True)
+    if use_distributor_pricing:
+        price = get_distributor_price(country_code, num_packages)
+    else:
+        price = None
+    
     ##REMOVE THIS LINE TO REMOVE DISTRIBUTOR PRICING. SET PRICE TO NONE 
-    price = get_distributor_price(country_code, num_packages)
+    #price = get_distributor_price(country_code, num_packages)
     #price = None
     
     # Secondary price logic (if distributor price not found)
