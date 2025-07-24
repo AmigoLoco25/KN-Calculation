@@ -80,13 +80,15 @@ else:
     valid_rows = kn_df[
         kn_df['Shipment Creation/Booking Date (Day)'].between(start_date, latest_date)
     ]
-
+    
 
 if valid_rows.empty:
     st.info("No orders found for this period or ABO selection.")
     st.stop()
 
 valid_rows['Shipment Creation/Booking Date (Day)'] = valid_rows['Shipment Creation/Booking Date (Day)'].dt.strftime('%d/%m/%Y')
+valid_rows = valid_rows.sort_values("Shipment Creation/Booking Date (Day)", ascending=False)
+
 
 # ---------- INFO FROM CSV ----------
 for _, row in valid_rows.iterrows():
