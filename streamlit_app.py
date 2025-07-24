@@ -46,7 +46,7 @@ try:
     kn_df["Shipment Creation/Booking Date (Day)"] = pd.to_datetime(kn_df["Shipment Creation/Booking Date (Day)"], dayfirst=True, errors='coerce')
 
     # Filter last month's data
-    last_month = datetime.now() - timedelta(days=30)
+    last_month = datetime.now() - timedelta(days=60)
     recent_orders = kn_df[kn_df["Shipment Creation/Booking Date (Day)"] >= last_month]
             
 except Exception as e:
