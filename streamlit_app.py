@@ -48,22 +48,6 @@ try:
     # Filter last month's data
     last_month = datetime.now() - timedelta(days=30)
     recent_orders = kn_df[kn_df["Shipment Creation/Booking Date (Day)"] >= last_month]
-    
-    st.subheader("📦 Recent ABOs from the Last Month")
-    st.dataframe(recent_orders)
-    
-    # Optional ABO search input
-    search_input = st.text_input("🔍 Search for specific ABO(s)", placeholder="e.g., A250254, A250255")
-    
-    if search_input:
-        search_list = [ab.strip().upper() for ab in search_input.split(",") if ab.strip()]
-        matching_abos = kn_df[kn_df["ABO"].isin(search_list)]
-    
-        if matching_abos.empty:
-            st.warning("No matching ABOs found.")
-        else:
-            st.subheader("🔎 Search Results")
-            st.dataframe(matching_abos)
             
 except Exception as e:
     st.error(f"Error loading file: {e}")
