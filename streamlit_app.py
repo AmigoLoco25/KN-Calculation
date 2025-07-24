@@ -1054,6 +1054,7 @@ for _, row in valid_rows.iterrows():
     city = row['Destination']
     num_packages = row['Packages']
     albaran = row["ABO"]
+    date = row['Shipment Creation/Booking Date (Day)']
 
     weight_class = get_weight_tier(weight)
     zone = None
@@ -1112,6 +1113,7 @@ for _, row in valid_rows.iterrows():
         zone = "N/A (Distributor)"
     
     results.append({
+        "Date": date,
         "ABO": albaran,
         "Volume (m3)": row["Volume (m3)"],
         "Gross weight (kgs)": weight,
