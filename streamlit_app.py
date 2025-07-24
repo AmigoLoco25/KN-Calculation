@@ -43,17 +43,10 @@ def load_data(file_path):
 file_path = "SPEND REPORT CON ABO.csv"
 try:
     kn_df = load_data(file_path)
-    kn_df["Shipment Creation/Booking Date (Day)"] = pd.to_datetime(kn_df["Shipment Creation/Booking Date (Day)"], dayfirst=True, errors='coerce')
-
-    # Filter last month's data
-    last_month = datetime.now() - timedelta(days=60)
-    recent_orders = kn_df[kn_df["Shipment Creation/Booking Date (Day)"] >= last_month]
-            
+   
 except Exception as e:
     st.error(f"Error loading file: {e}")
     st.stop()
-
-
 
 
 # ---------- ALBARAN SELECTION ----------
@@ -81,7 +74,7 @@ if raw_input.strip():
     valid_rows = kn_df[kn_df["ABO"].isin(albaran_list)]
 else:
     # Default: filter to last 30 days of data
-    last_month = datetime.today() - timedelta(days=30)
+    last_month = datetime.today() - timedelta(days=60)
     valid_rows = kn_df[kn_df["Shipment Creation/Booking Date (Day)"] >= last_month]
 
 if valid_rows.empty:
